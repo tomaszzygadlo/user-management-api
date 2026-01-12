@@ -112,7 +112,7 @@ class UserService
 
         // Send notification to all email addresses
         $emailAddresses = $user->emails->pluck('email')->toArray();
-        
+
         Notification::route('mail', $emailAddresses)
             ->notify(new WelcomeUserNotification($user));
 
@@ -130,11 +130,15 @@ class UserService
      */
     private function syncEmails(User $user, array $emailsData): void
     {
-        foreach ($emailsData as $emailData) {
+        // Check if any email is marked as primary
+        $hasPrimary = collect($emailsData)->contains('is_primary', true);
+
+        foreach ($emailsData as $index => $emailData) {
             Email::create([
                 'user_id' => $user->id,
                 'email' => $emailData['email'],
-                'is_primary' => $emailData['is_primary'] ?? false,
+                // If no email is primary, make the first one primary
+                'is_primary' => ($emailData['is_primary'] ?? false) || (!$hasPrimary && $index === 0),
             ]);
         }
     }

@@ -55,7 +55,8 @@ class StoreUserRequest extends FormRequest
             'emails' => ['required', 'array', 'min:1', 'max:10'],
             'emails.*.email' => [
                 'required',
-                'email:rfc,dns',
+                // Use DNS check only in production/staging, not in testing
+                app()->environment('testing') ? 'email:rfc' : 'email:rfc,dns',
                 'max:255',
                 'distinct', // No duplicates in the request
             ],

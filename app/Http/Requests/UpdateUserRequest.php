@@ -56,8 +56,9 @@ class UpdateUserRequest extends FormRequest
             'emails' => ['sometimes', 'array', 'min:1', 'max:10'],
             'emails.*.id' => ['sometimes', 'integer', 'exists:emails,id'],
             'emails.*.email' => [
-                'required',
-                'email:rfc,dns',
+                'required_without:emails.*.delete',
+                // Use DNS check only in production/staging, not in testing
+                app()->environment('testing') ? 'email:rfc' : 'email:rfc,dns',
                 'max:255',
                 'distinct',
             ],
