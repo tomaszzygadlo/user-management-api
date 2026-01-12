@@ -5,6 +5,27 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
+/**
+ * @OA\Schema(
+ *     schema="StoreUserRequest",
+ *     title="StoreUserRequest",
+ *     description="Store user request body",
+ *     required={"first_name", "last_name", "phone_number", "emails"},
+ *     @OA\Property(property="first_name", type="string", maxLength=255, example="John"),
+ *     @OA\Property(property="last_name", type="string", maxLength=255, example="Doe"),
+ *     @OA\Property(property="phone_number", type="string", maxLength=20, example="+1234567890"),
+ *     @OA\Property(
+ *         property="emails",
+ *         type="array",
+ *         @OA\Items(
+ *             type="object",
+ *             required={"email"},
+ *             @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
+ *             @OA\Property(property="is_primary", type="boolean", example=true)
+ *         )
+ *     )
+ * )
+ */
 class StoreUserRequest extends FormRequest
 {
     /**
@@ -70,7 +91,7 @@ class StoreUserRequest extends FormRequest
         // Ensure at least one email is marked as primary
         if ($this->has('emails') && is_array($this->emails)) {
             $hasPrimary = collect($this->emails)->contains('is_primary', true);
-            
+
             if (!$hasPrimary && count($this->emails) > 0) {
                 $emails = $this->emails;
                 $emails[0]['is_primary'] = true;

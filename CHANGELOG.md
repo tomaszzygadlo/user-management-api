@@ -16,6 +16,8 @@ Initial release for recruitment task.
 - Service Layer architecture
 - Full test suite (Feature + Unit)
 - Docker support
+- Interactive API documentation (Swagger UI)
+- OpenAPI 3.0 specification
 
 ### Tech
 - Laravel 12

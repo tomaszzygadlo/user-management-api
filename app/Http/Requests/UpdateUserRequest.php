@@ -5,6 +5,27 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
+/**
+ * @OA\Schema(
+ *     schema="UpdateUserRequest",
+ *     title="UpdateUserRequest",
+ *     description="Update user request body",
+ *     @OA\Property(property="first_name", type="string", maxLength=255, example="John"),
+ *     @OA\Property(property="last_name", type="string", maxLength=255, example="Doe"),
+ *     @OA\Property(property="phone_number", type="string", maxLength=20, example="+1234567890"),
+ *     @OA\Property(
+ *         property="emails",
+ *         type="array",
+ *         @OA\Items(
+ *             type="object",
+ *             @OA\Property(property="id", type="integer", example=1),
+ *             @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
+ *             @OA\Property(property="is_primary", type="boolean", example=true),
+ *             @OA\Property(property="delete", type="boolean", example=false)
+ *         )
+ *     )
+ * )
+ */
 class UpdateUserRequest extends FormRequest
 {
     /**

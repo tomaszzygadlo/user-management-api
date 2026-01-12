@@ -26,6 +26,7 @@ php artisan test
 - PHPStan level 5 (`./vendor/bin/phpstan analyse`)
 - Tests for new features
 - Type hints everywhere
+- Update OpenAPI annotations for API changes (`php artisan l5-swagger:generate`)
 
 ## Commit Format
 

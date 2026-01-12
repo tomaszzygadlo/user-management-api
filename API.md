@@ -1,5 +1,20 @@
 # API Documentation
 
+## Interactive Documentation
+
+For a better experience, use the **Swagger UI**:
+
+🔗 **http://localhost:8000/api/documentation**
+
+The Swagger UI provides:
+- Interactive API testing directly from your browser
+- Complete request/response schemas
+- Try-it-out functionality for all endpoints
+- Real-time validation
+
+Alternatively, you can access the OpenAPI JSON specification at:
+- **http://localhost:8000/docs/api-docs.json**
+
 ## Overview
 
 **Base URL:** `http://localhost:8000/api`  

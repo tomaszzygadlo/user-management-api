@@ -129,7 +129,10 @@ MAIL_ENCRYPTION=tls
 php artisan serve
 ```
 
-The API will be available at: `http://localhost:8000`
+The API will be available at:
+- **API Base**: `http://localhost:8000/api`
+- **Swagger UI**: `http://localhost:8000/api/documentation`
+- **Home Page**: `http://localhost:8000/`
 
 #### Step 9: Start Queue Worker (Optional)
 
@@ -188,7 +191,9 @@ docker-compose exec app php artisan queue:work
 
 #### Access Points
 
-- **API**: http://localhost:8000
+- **API Base**: http://localhost:8000/api
+- **Swagger UI**: http://localhost:8000/api/documentation
+- **Home Page**: http://localhost:8000/
 - **Mailpit UI**: http://localhost:8025 (email testing)
 - **MySQL**: localhost:3306
 - **Redis**: localhost:6379

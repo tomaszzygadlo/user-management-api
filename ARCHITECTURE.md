@@ -64,5 +64,34 @@ class UserResource extends JsonResource {
 
 Why: Consistent responses, easy versioning, decouples DB from API structure.
 
+### OpenAPI/Swagger Documentation
+API documentation generated from annotations using L5-Swagger.
+
+```php
+/**
+ * @OA\Get(
+ *      path="/api/users",
+ *      operationId="getUsersList",
+ *      tags={"Users"},
+ *      summary="Get list of users",
+ *      @OA\Response(response=200, description="Successful operation")
+ * )
+ */
+public function index(Request $request): UserCollection { ... }
+```
+
+Why: 
+- Interactive documentation (Swagger UI)
+- Documentation stays synchronized with code
+- Type-safe API contracts
+- Easy testing with try-it-out functionality
+
+Generate documentation:
+```bash
+php artisan l5-swagger:generate
+```
+
+Access at: `http://localhost:8000/api/documentation`
+
 ### Repository Pattern?
 Not used. Eloquent is enough for this scale. Would add unnecessary abstraction.

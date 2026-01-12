@@ -73,7 +73,24 @@ docker-compose exec app php artisan migrate --seed
 docker-compose exec app php artisan queue:work
 ```
 
-Mailpit (email testing): `http://localhost:8025`
+**Access points:**
+- API: `http://localhost:8000/api`
+- Swagger UI: `http://localhost:8000/api/documentation`
+- Mailpit (email testing): `http://localhost:8025`
+
+## API Documentation
+
+Interactive API documentation is available via **Swagger UI**:
+
+- 🔗 **Swagger UI**: `http://localhost:8000/api/documentation`
+- 📄 **OpenAPI JSON**: `http://localhost:8000/docs/api-docs.json`
+- 🏠 **Home Page**: `http://localhost:8000/` - quick overview with links
+
+The Swagger UI provides:
+- ✅ Interactive API testing directly from your browser
+- 📋 Complete request/response examples
+- 🔍 Schema definitions
+- 🚀 Try-it-out functionality
 
 ## API Endpoints
 
@@ -212,7 +229,10 @@ See `ARCHITECTURE.md` for detailed design decisions.
 ```bash
 ./vendor/bin/pint              # fix code style
 ./vendor/bin/phpstan analyse   # static analysis
+php artisan l5-swagger:generate # regenerate API documentation
 ```
+
+**Note**: Swagger documentation is automatically generated from OpenAPI annotations in controllers.
 
 ## License
 

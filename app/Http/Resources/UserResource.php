@@ -6,6 +6,13 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
+ * @OA\Schema(
+ *     schema="UserResource",
+ *     title="UserResource",
+ *     description="User resource",
+ *     @OA\Property(property="data", ref="#/components/schemas/User")
+ * )
+ *
  * @mixin \App\Models\User
  */
 class UserResource extends JsonResource
