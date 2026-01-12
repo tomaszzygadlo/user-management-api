@@ -175,32 +175,33 @@ class UserServiceTest extends TestCase
     /**
      * Test transaction rollback on failure.
      *
-     * @test
-     * @group skip
+     * Note: This test verifies that transactions work correctly by checking
+     * that invalid data doesn't create partial records.
      */
-    public function skip_test_create_user_rolls_back_on_failure(): void
+    public function test_create_user_rolls_back_on_failure(): void
     {
-        // Skipped: Transaction rollback testing requires specific database configuration
-        $this->markTestSkipped('Transaction rollback test - requires specific database setup');
-
-        // Arrange
+        // Arrange - prepare invalid data that will fail during processing
+        // Using an email without the email key to cause an error
         $data = [
             'first_name' => 'Test',
             'last_name' => 'User',
             'phone_number' => '+48123456789',
             'emails' => [
-                ['email' => 'invalid-email-format'], // This will fail validation
+                ['invalid_key' => 'test@example.com'], // Missing 'email' key will cause error
             ],
         ];
+
+        $initialUserCount = User::count();
+        $initialEmailCount = Email::count();
 
         // Act & Assert
         try {
             $this->userService->createUser($data);
             $this->fail('Expected exception was not thrown');
         } catch (\Exception $e) {
-            // Verify no user was created
-            $this->assertDatabaseCount('users', 0);
-            $this->assertDatabaseCount('emails', 0);
+            // Verify no new records were created (transaction rolled back)
+            $this->assertEquals($initialUserCount, User::count());
+            $this->assertEquals($initialEmailCount, Email::count());
         }
     }
 }
