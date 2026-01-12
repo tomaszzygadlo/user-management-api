@@ -310,10 +310,11 @@ class UserController extends Controller
      *          )
      *      ),
      *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
+     *          response=202,
+     *          description="Accepted - emails queued for sending",
      *          @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="Welcome email sent successfully.")
+     *              @OA\Property(property="message", type="string", example="Welcome emails queued successfully"),
+     *              @OA\Property(property="user_id", type="integer", example=1)
      *          )
      *       ),
      *      @OA\Response(
@@ -329,11 +330,12 @@ class UserController extends Controller
     public function sendWelcome(User $user): JsonResponse
     {
         try {
-            $this->userService->sendWelcomeEmail($user);
+            $this->userService->sendWelcomeEmails($user);
 
             return response()->json([
-                'message' => 'Welcome email sent successfully.',
-            ], Response::HTTP_OK);
+                'message' => 'Welcome emails queued successfully',
+                'user_id' => $user->id,
+            ], Response::HTTP_ACCEPTED);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to send welcome email',
