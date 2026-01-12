@@ -165,10 +165,10 @@
             </div>
 
             <div class="buttons">
-                <a href="{{ url('/api/documentation') }}" class="btn btn-primary">
+                <a href="{{ url('/api/documentation') }}" target="_blank" class="btn btn-primary">
                     📚 Dokumentacja API
                 </a>
-                <a href="{{ url('/api/health') }}" class="btn btn-secondary">
+                <a href="{{ url('/api/health') }}" target="_blank" class="btn btn-secondary">
                     ❤️ Health Check
                 </a>
             </div>
