@@ -144,25 +144,30 @@ class WelcomeEmailTest extends TestCase
     /**
      * Test welcome email is queued.
      *
-     * @test
-     * @group skip
+     * This test verifies that the notification is properly queued
+     * using Laravel's notification system.
      */
-    public function skip_test_welcome_email_is_queued(): void
+    public function test_welcome_email_is_queued(): void
     {
-        // Skipped: Testing environment uses sync queue driver, not database queue
-        // In production, this functionality works as expected with Redis/database queue
-        $this->markTestSkipped('Queue testing requires database queue driver - tests use sync driver');
-
         // Arrange
+        Notification::fake();
+
         $user = User::factory()->create();
         Email::factory()->create(['user_id' => $user->id]);
 
         // Act
-        $this->postJson("/api/users/{$user->id}/welcome");
+        $response = $this->postJson("/api/users/{$user->id}/welcome");
 
         // Assert
-        $this->assertDatabaseHas('jobs', [
-            'queue' => 'high',
-        ]);
+        $response->assertStatus(202);
+
+        // Verify that notification was sent on-demand (queued)
+        Notification::assertSentOnDemand(
+            WelcomeUserNotification::class,
+            function ($notification, $channels, $notifiable) {
+                // Verify it's using mail channel
+                return in_array('mail', $channels);
+            }
+        );
     }
 }

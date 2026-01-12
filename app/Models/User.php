@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * User Model
- * 
+ *
  * @property int $id
  * @property string $first_name
  * @property string $last_name
@@ -45,6 +45,19 @@ class User extends Model
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
     ];
+
+    /**
+     * Boot the model and add event listeners.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // When user is being deleted (soft delete), also delete all related emails
+        static::deleting(function ($user) {
+            $user->emails()->delete();
+        });
+    }
 
     /**
      * Get all emails for the user.
