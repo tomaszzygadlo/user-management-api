@@ -1,59 +1,219 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# User Management API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Simple REST API for managing users with multiple emails. Built with Laravel 12.
 
-## About Laravel
+## What it does
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- CRUD operations for users
+- Each user can have multiple emails (one marked as primary)
+- Welcome email sent to all user's addresses (queued)
+- Soft delete users (cascade delete emails)
+- Search & pagination
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tech Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Laravel 12
+- PHP 8.3+
+- MySQL 8.0+
+- Redis (optional, for queue)
 
-## Learning Laravel
+## Project Structure
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Project Structure
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```
+app/
+├── Http/
+│   ├── Controllers/Api/UserController.php
+│   ├── Requests/StoreUserRequest.php, UpdateUserRequest.php
+│   └── Resources/UserResource.php, EmailResource.php
+├── Models/User.php, Email.php
+├── Services/UserService.php
+└── Notifications/WelcomeUserNotification.php
 
-## Laravel Sponsors
+database/migrations/
+├── create_users_table
+├── create_emails_table
+└── create_jobs_table
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+tests/
+├── Feature/UserCrudTest.php, WelcomeEmailTest.php
+└── Unit/UserServiceTest.php
+```
 
-### Premium Partners
+## Quick Setup
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Quick Setup
 
-## Contributing
+```bash
+# Install
+composer install
+cp .env.example .env
+php artisan key:generate
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# Configure DB in .env then:
+php artisan migrate --seed
 
-## Code of Conduct
+# Run
+php artisan serve
+php artisan queue:work  # separate terminal
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+API available at: `http://localhost:8000/api`
 
-## Security Vulnerabilities
+## Docker Setup (alternative)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Docker Setup (alternative)
+
+```bash
+docker-compose up -d
+docker-compose exec app composer install
+docker-compose exec app php artisan key:generate
+docker-compose exec app php artisan migrate --seed
+docker-compose exec app php artisan queue:work
+```
+
+Mailpit (email testing): `http://localhost:8025`
+
+## API Endpoints
+
+## API Endpoints
+
+```
+GET    /api/health                 - health check
+GET    /api/users                  - list users (pagination, search)
+POST   /api/users                  - create user with emails
+GET    /api/users/{id}             - get user details
+PUT    /api/users/{id}             - update user/emails
+DELETE /api/users/{id}             - soft delete user
+POST   /api/users/{id}/welcome     - send welcome email (queued)
+```
+
+## Example Requests
+## Example Requests
+
+### Create user
+```bash
+curl -X POST http://localhost:8000/api/users \
+  -H "Content-Type: application/json" \
+  -d '{
+    "first_name": "Jan",
+    "last_name": "Kowalski",
+    "phone_number": "+48123456789",
+    "emails": [
+      {"email": "jan@example.com", "is_primary": true}
+    ]
+  }'
+```
+
+### Update user
+```bash
+curl -X PUT http://localhost:8000/api/users/1 \
+  -H "Content-Type: application/json" \
+  -d '{"first_name": "Jan", "last_name": "Nowak"}'
+```
+
+### Send welcome email
+```bash
+curl -X POST http://localhost:8000/api/users/1/welcome
+```
+
+See `API.md` for complete documentation.
+
+## Testing
+## Testing
+
+```bash
+php artisan test                    # all tests
+php artisan test --coverage         # with coverage
+php artisan test --testsuite=Feature
+```
+
+Tests:
+- `tests/Feature/UserCrudTest.php` - API endpoints
+- `tests/Feature/WelcomeEmailTest.php` - email sending
+- `tests/Unit/UserServiceTest.php` - service layer
+
+## Database Schema
+
+## Database Schema
+
+```sql
+users:
+  - id, first_name, last_name, phone_number
+  - timestamps, soft_deletes
+  - indexes on name, phone
+
+emails:
+  - id, user_id (FK), email, is_primary
+  - verified_at, timestamps
+  - unique(user_id, email)
+  - cascade delete on user deletion
+```
+
+## Configuration Notes
+
+**Queue**: Use `sync` for dev, `redis` for prod. Start worker: `php artisan queue:work`
+
+**Mail**: Use `log` driver for dev, SMTP for prod. Check `.env.example` for config.
+
+**Validation**: 
+- Phone: regex validated
+- Email: RFC + DNS validation
+- Only one primary email per user
+- Email unique per user
+
+## Troubleshooting
+
+**Quick Fix**: Run the permission fix script:
+```bash
+# Linux/macOS
+bash fix-permissions.sh
+
+# Windows PowerShell
+.\fix-permissions.ps1
+```
+
+**Permission denied (storage/logs)**: 
+```bash
+# Docker
+docker compose exec app chmod -R 777 storage/logs
+docker compose exec app chown -R www-data:www-data storage bootstrap/cache
+docker compose restart app
+
+# Local
+chmod -R 775 storage bootstrap/cache
+```
+
+**Rate limiter [api] is not defined**: Run `php artisan config:clear` and restart
+
+**Missing APP_KEY**: Run `php artisan key:generate` (or in Docker: `docker compose exec app php artisan key:generate`)
+
+**DB connection failed**: Check `.env` credentials, run `php artisan config:clear`
+
+**Queue not processing**: Ensure `php artisan queue:work` is running
+
+**Port in use**: Run `php artisan serve --port=8001`
+
+See `INSTALL.md` for detailed troubleshooting guide.
+
+## Architecture Notes
+
+- Service Layer for business logic
+- Form Requests for validation
+- API Resources for JSON transformation
+- Queued notifications for emails
+- Soft deletes with cascade
+
+See `ARCHITECTURE.md` for detailed design decisions.
+
+## Code Quality
+
+```bash
+./vendor/bin/pint              # fix code style
+./vendor/bin/phpstan analyse   # static analysis
+```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT
