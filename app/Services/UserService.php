@@ -101,7 +101,18 @@ class UserService
      */
     public function sendWelcomeEmails(User $user): void
     {
+        Log::info(">>> UserService->sendWelcomeEmails() START", [
+            'user_id' => $user->id,
+            'user_name' => $user->first_name . ' ' . $user->last_name,
+        ]);
+
         $user->load('emails');
+
+        Log::info("User emails loaded", [
+            'user_id' => $user->id,
+            'emails_count' => $user->emails->count(),
+            'emails' => $user->emails->pluck('email')->toArray(),
+        ]);
 
         if ($user->emails->isEmpty()) {
             Log::warning("Cannot send welcome emails: user has no email addresses", [
@@ -113,8 +124,29 @@ class UserService
         // Send notification to all email addresses
         $emailAddresses = $user->emails->pluck('email')->toArray();
 
-        Notification::route('mail', $emailAddresses)
-            ->notify(new WelcomeUserNotification($user));
+        Log::info("Preparing to send notification", [
+            'user_id' => $user->id,
+            'email_addresses' => $emailAddresses,
+            'notification_class' => WelcomeUserNotification::class,
+        ]);
+
+        try {
+            Notification::route('mail', $emailAddresses)
+                ->notify(new WelcomeUserNotification($user));
+
+            Log::info(">>> Notification::notify() CALLED SUCCESSFULLY", [
+                'user_id' => $user->id,
+                'email_count' => count($emailAddresses),
+                'emails' => $emailAddresses,
+            ]);
+        } catch (\Exception $e) {
+            Log::error(">>> NOTIFICATION FAILED", [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            throw $e;
+        }
 
         Log::info("Welcome emails queued", [
             'user_id' => $user->id,

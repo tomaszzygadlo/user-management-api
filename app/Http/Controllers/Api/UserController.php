@@ -335,14 +335,33 @@ class UserController extends Controller
      */
     public function sendWelcome(User $user): JsonResponse
     {
+        \Log::info('=== WELCOME EMAIL REQUEST START ===', [
+            'user_id' => $user->id,
+            'user_name' => $user->first_name . ' ' . $user->last_name,
+            'timestamp' => now()->toIso8601String(),
+        ]);
+
         try {
+            \Log::info('Calling UserService->sendWelcomeEmails()', ['user_id' => $user->id]);
+
             $this->userService->sendWelcomeEmails($user);
+
+            \Log::info('=== WELCOME EMAIL REQUEST SUCCESS ===', [
+                'user_id' => $user->id,
+                'message' => 'Welcome emails queued successfully',
+            ]);
 
             return response()->json([
                 'message' => 'Welcome emails queued successfully',
                 'user_id' => $user->id,
             ], Response::HTTP_ACCEPTED);
         } catch (\Exception $e) {
+            \Log::error('=== WELCOME EMAIL REQUEST FAILED ===', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return response()->json([
                 'message' => 'Failed to send welcome email',
                 'error' => $e->getMessage(),

@@ -34,6 +34,15 @@ RUN chown -R www-data:www-data /var/www \
     && chmod -R 775 /var/www/storage \
     && chmod -R 775 /var/www/bootstrap/cache
 
+# Create symlink for Laravel logs to stdout (makes logs visible in docker logs)
+RUN mkdir -p /var/www/storage/logs \
+    && touch /var/www/storage/logs/laravel.log \
+    && chown www-data:www-data /var/www/storage/logs/laravel.log \
+    && chmod 666 /var/www/storage/logs/laravel.log
+
+# Note: For production, to see Laravel logs in docker logs, run:
+# ln -sf /dev/stdout /var/www/storage/logs/laravel.log
+
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
 CMD ["php-fpm"]

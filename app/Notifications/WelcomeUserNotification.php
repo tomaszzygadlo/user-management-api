@@ -21,8 +21,17 @@ class WelcomeUserNotification extends Notification implements ShouldQueue
     public function __construct(
         private readonly User $user
     ) {
-        // Set queue for high priority
-        $this->onQueue('high');
+        \Log::info('>>> WelcomeUserNotification CONSTRUCTOR', [
+            'user_id' => $user->id,
+            'user_name' => $user->first_name . ' ' . $user->last_name,
+        ]);
+
+        // Use default queue instead of high
+        $this->onQueue('default');
+
+        \Log::info('>>> Notification queued on: default', [
+            'user_id' => $user->id,
+        ]);
     }
 
     /**
@@ -32,6 +41,11 @@ class WelcomeUserNotification extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
+        \Log::info('>>> WelcomeUserNotification->via() called', [
+            'user_id' => $this->user->id,
+            'channels' => ['mail'],
+        ]);
+
         return ['mail'];
     }
 
@@ -40,14 +54,35 @@ class WelcomeUserNotification extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
-            ->subject('Witamy!')
-            ->greeting('Witamy!')
-            ->line($this->getWelcomeMessage())
-            ->line('Dziękujemy za rejestrację w naszym systemie.')
-            ->line('Jeśli masz jakieś pytania, skontaktuj się z nami.')
-            ->salutation('Pozdrawiamy,')
-            ->salutation('Zespół User Management');
+        \Log::info('>>> WelcomeUserNotification->toMail() called', [
+            'user_id' => $this->user->id,
+            'notifiable' => get_class($notifiable),
+        ]);
+
+        try {
+            $message = (new MailMessage)
+                ->subject('Witamy!')
+                ->greeting('Witamy!')
+                ->line($this->getWelcomeMessage())
+                ->line('Dziękujemy za rejestrację w naszym systemie.')
+                ->line('Jeśli masz jakieś pytania, skontaktuj się z nami.')
+                ->salutation('Pozdrawiamy,')
+                ->salutation('Zespół User Management');
+
+            \Log::info('>>> MailMessage created successfully', [
+                'user_id' => $this->user->id,
+                'subject' => 'Witamy!',
+            ]);
+
+            return $message;
+        } catch (\Exception $e) {
+            \Log::error('>>> toMail() FAILED', [
+                'user_id' => $this->user->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            throw $e;
+        }
     }
 
     /**
