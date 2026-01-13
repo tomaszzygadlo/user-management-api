@@ -1,0 +1,16 @@
+[Unit]
+Description=NextStep Laravel Queue Worker
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+Restart=always
+WorkingDirectory=/var/www/nextstep
+ExecStart=/usr/bin/php /var/www/nextstep/artisan queue:work --sleep=3 --tries=3 --timeout=90
+Environment=APP_ENV=production
+# ... możesz dodać dodatkowe ENV, np. DB_CONNECTION itp. ...
+
+[Install]
+WantedBy=multi-user.target
+

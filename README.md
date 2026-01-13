@@ -17,6 +17,20 @@ Simple REST API for managing users with multiple emails. Built with Laravel 12.
 - MySQL 8.0+
 - Redis (optional, for queue)
 
+## 📚 Documentation
+
+### 🚀 Quick Start
+- **[Quick Start - Deploy to nextstep.chat](QUICKSTART.md)** - Fast deployment guide (25 minutes)
+
+### 📖 Full Documentation
+- **[Installation Guide](docs/INSTALL.md)** - Detailed installation instructions
+- **[API Documentation](docs/API.md)** - Complete API endpoints reference
+- **[Architecture](docs/ARCHITECTURE.md)** - Project structure and design decisions
+- **[Project Structure](docs/PROJECT_STRUCTURE.md)** - Directory organization and navigation
+- **[Deployment Guide](docs/DEPLOYMENT.md)** - How to deploy to production
+- **[Contributing](docs/CONTRIBUTING.md)** - Guidelines for contributors
+- **[Changelog](docs/CHANGELOG.md)** - Version history and changes
+
 ## Project Structure
 
 ## Project Structure
@@ -135,7 +149,7 @@ curl -X PUT http://localhost:8000/api/users/1 \
 curl -X POST http://localhost:8000/api/users/1/welcome
 ```
 
-See `API.md` for complete documentation.
+See [API Documentation](docs/API.md) for complete reference.
 
 ## Testing
 ## Testing
@@ -185,10 +199,10 @@ emails:
 **Quick Fix**: Run the permission fix script:
 ```bash
 # Linux/macOS
-bash fix-permissions.sh
+bash scripts/fix-permissions.sh
 
 # Windows PowerShell
-.\fix-permissions.ps1
+.\scripts\fix-permissions.ps1
 ```
 
 **Permission denied (storage/logs)**: 
@@ -212,7 +226,7 @@ chmod -R 775 storage bootstrap/cache
 
 **Port in use**: Run `php artisan serve --port=8001`
 
-See `INSTALL.md` for detailed troubleshooting guide.
+See [Installation Guide](docs/INSTALL.md) for detailed troubleshooting guide.
 
 ## Architecture Notes
 
@@ -222,7 +236,7 @@ See `INSTALL.md` for detailed troubleshooting guide.
 - Queued notifications for emails
 - Soft deletes with cascade
 
-See `ARCHITECTURE.md` for detailed design decisions.
+See [Architecture](docs/ARCHITECTURE.md) for detailed design decisions.
 
 ## Code Quality
 
