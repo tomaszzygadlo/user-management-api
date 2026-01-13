@@ -68,7 +68,14 @@ $PHP_CMD artisan down || true
 
 # Pull latest changes
 echo -e "${YELLOW}[2/8] Pulling latest changes from git...${NC}"
-git pull origin main || git pull origin master
+# Detect default branch
+DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "")
+if [ -z "$DEFAULT_BRANCH" ]; then
+    # Try to detect from remote
+    DEFAULT_BRANCH=$(git remote show origin 2>/dev/null | grep 'HEAD branch' | cut -d' ' -f5 || echo "master")
+fi
+echo -e "${GREEN}✓ Using branch: ${DEFAULT_BRANCH}${NC}"
+git pull origin "$DEFAULT_BRANCH"
 
 # Install/update composer dependencies
 echo -e "${YELLOW}[3/8] Installing Composer dependencies...${NC}"

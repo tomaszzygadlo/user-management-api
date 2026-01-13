@@ -36,7 +36,7 @@ mysqldump -u your_user -p user_management > backup_$(date +%Y%m%d_%H%M%S).sql
 
 ```bash
 git fetch --all
-git pull origin main  # or your branch name
+git pull
 ```
 
 ### Step 4: Update application
@@ -176,18 +176,18 @@ php artisan down
 
 This shows a maintenance page to users during update.
 
-#### 4. Pull new code
+### Step 3: Pull new code
 
 ```bash
 # Stash any local changes (if needed)
 git stash
 
-# Pull latest version
+# Pull latest version (script auto-detects branch)
 git fetch --all
-git pull origin main
+git pull
 
-# Or checkout specific version
-git checkout v1.2.3
+# Or use the update script which handles this automatically
+bash scripts/update-production.sh
 ```
 
 #### 5. Update dependencies
