@@ -28,6 +28,9 @@ class UserFactory extends Factory
             'first_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),
             'phone_number' => fake()->regexify('\+48[0-9]{9}'),
+            'email' => fake()->unique()->safeEmail(),
+            'password' => 'password', // Will be automatically hashed by the model
+            'email_verified_at' => now(),
         ];
     }
 
@@ -49,6 +52,16 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'deleted_at' => now(),
+        ]);
+    }
+
+    /**
+     * Create unverified user.
+     */
+    public function unverified(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'email_verified_at' => null,
         ]);
     }
 }

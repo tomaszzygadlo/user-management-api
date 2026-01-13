@@ -31,7 +31,7 @@ class WelcomeEmailTest extends TestCase
         ]);
 
         // Act
-        $response = $this->postJson("/api/users/{$user->id}/welcome");
+        $response = $this->actingAsUser()->postJson("/api/users/{$user->id}/welcome");
 
         // Assert
         $response->assertStatus(202)
@@ -68,7 +68,7 @@ class WelcomeEmailTest extends TestCase
         ]);
 
         // Act
-        $this->postJson("/api/users/{$user->id}/welcome");
+        $this->actingAsUser()->postJson("/api/users/{$user->id}/welcome");
 
         // Assert
         Notification::assertSentOnDemand(
@@ -113,7 +113,7 @@ class WelcomeEmailTest extends TestCase
         }
 
         // Act
-        $this->postJson("/api/users/{$user->id}/welcome");
+        $this->actingAsUser()->postJson("/api/users/{$user->id}/welcome");
 
         // Assert
         Notification::assertSentOnDemand(
@@ -135,7 +135,7 @@ class WelcomeEmailTest extends TestCase
     public function test_sending_welcome_to_non_existent_user_returns_404(): void
     {
         // Act
-        $response = $this->postJson('/api/users/99999/welcome');
+        $response = $this->actingAsUser()->postJson('/api/users/99999/welcome');
 
         // Assert
         $response->assertStatus(404);
@@ -156,7 +156,7 @@ class WelcomeEmailTest extends TestCase
         Email::factory()->create(['user_id' => $user->id]);
 
         // Act
-        $response = $this->postJson("/api/users/{$user->id}/welcome");
+        $response = $this->actingAsUser()->postJson("/api/users/{$user->id}/welcome");
 
         // Assert
         $response->assertStatus(202);

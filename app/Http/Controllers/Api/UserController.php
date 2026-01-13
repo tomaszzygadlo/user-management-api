@@ -56,6 +56,7 @@ class UserController extends Controller
      *      tags={"Users"},
      *      summary="Get list of users",
      *      description="Returns list of users",
+     *      security={{"sanctum":{}}},
      *      @OA\Parameter(
      *          name="per_page",
      *          in="query",
@@ -121,6 +122,7 @@ class UserController extends Controller
      *      tags={"Users"},
      *      summary="Store new user",
      *      description="Returns user data",
+     *      security={{"sanctum":{}}},
      *      @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(ref="#/components/schemas/StoreUserRequest")
@@ -163,6 +165,7 @@ class UserController extends Controller
      *      tags={"Users"},
      *      summary="Get user information",
      *      description="Returns user data",
+     *      security={{"sanctum":{}}},
      *      @OA\Parameter(
      *          name="id",
      *          description="User id",
@@ -200,6 +203,7 @@ class UserController extends Controller
      *      tags={"Users"},
      *      summary="Update existing user",
      *      description="Returns updated user data",
+     *      security={{"sanctum":{}}},
      *      @OA\Parameter(
      *          name="id",
      *          description="User id",
@@ -255,6 +259,7 @@ class UserController extends Controller
      *      tags={"Users"},
      *      summary="Delete existing user",
      *      description="Deletes a record and returns no content",
+     *      security={{"sanctum":{}}},
      *      @OA\Parameter(
      *          name="id",
      *          description="User id",
@@ -300,6 +305,7 @@ class UserController extends Controller
      *      tags={"Users"},
      *      summary="Send welcome email to user",
      *      description="Sends a welcome email to the user",
+     *      security={{"sanctum":{}}},
      *      @OA\Parameter(
      *          name="id",
      *          description="User id",

@@ -49,6 +49,10 @@ fi
 echo -e "${YELLOW}[5/8] Running database migrations...${NC}"
 php artisan migrate --force
 
+# Publish Sanctum configuration (if not already published)
+echo -e "${YELLOW}[5.5/8] Publishing Sanctum configuration...${NC}"
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider" --force || true
+
 # Clear and cache config
 echo -e "${YELLOW}[6/8] Clearing and caching configuration...${NC}"
 php artisan config:clear

@@ -14,21 +14,24 @@ trait CreatesApplication
     {
         // Set environment variables BEFORE loading app
         // Generate a proper 32-byte key for AES-256-CBC encryption
+        $basePath = realpath(__DIR__ . '/..');
+        $testDbPath = $basePath . '/database/testing.sqlite';
+
         putenv('APP_KEY=base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=');
         putenv('DB_CONNECTION=sqlite');
-        putenv('DB_DATABASE=/var/www/database/testing.sqlite');
+        putenv('DB_DATABASE=' . $testDbPath);
         putenv('CACHE_STORE=array');
         putenv('QUEUE_CONNECTION=sync');
 
         $_ENV['APP_KEY'] = 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';
         $_ENV['DB_CONNECTION'] = 'sqlite';
-        $_ENV['DB_DATABASE'] = '/var/www/database/testing.sqlite';
+        $_ENV['DB_DATABASE'] = $testDbPath;
         $_ENV['CACHE_STORE'] = 'array';
         $_ENV['QUEUE_CONNECTION'] = 'sync';
 
         $_SERVER['APP_KEY'] = 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';
         $_SERVER['DB_CONNECTION'] = 'sqlite';
-        $_SERVER['DB_DATABASE'] = '/var/www/database/testing.sqlite';
+        $_SERVER['DB_DATABASE'] = $testDbPath;
         $_SERVER['CACHE_STORE'] = 'array';
         $_SERVER['QUEUE_CONNECTION'] = 'sync';
 

@@ -4,11 +4,13 @@ Simple REST API for managing users with multiple emails. Built with Laravel 12.
 
 ## What it does
 
+- **Authentication** with Laravel Sanctum (token-based API)
 - CRUD operations for users
 - Each user can have multiple emails (one marked as primary)
 - Welcome email sent to all user's addresses (queued)
 - Soft delete users (cascade delete emails)
 - Search & pagination
+- Interactive Swagger documentation
 
 ## Tech Stack
 
@@ -20,18 +22,18 @@ Simple REST API for managing users with multiple emails. Built with Laravel 12.
 ## 📚 Documentation
 
 ### 🚀 Quick Start
-- **[Quick Start - Deploy to nextstep.chat](QUICKSTART.md)** - Fast deployment guide (25 minutes)
+- **[Quick Start - Deploy to production](QUICKSTART.md)** - Fast deployment guide
 
 ### 📖 Full Documentation
 - **[Installation Guide](docs/INSTALL.md)** - Detailed installation instructions
 - **[API Documentation](docs/API.md)** - Complete API endpoints reference
+- **[Authentication Guide](docs/AUTHENTICATION.md)** - Laravel Sanctum authentication
 - **[Architecture](docs/ARCHITECTURE.md)** - Project structure and design decisions
 - **[Project Structure](docs/PROJECT_STRUCTURE.md)** - Directory organization and navigation
 - **[Deployment Guide](docs/DEPLOYMENT.md)** - How to deploy to production
+- **[Production Hotfix](docs/PRODUCTION_HOTFIX.md)** - Emergency deployment procedures
 - **[Contributing](docs/CONTRIBUTING.md)** - Guidelines for contributors
 - **[Changelog](docs/CHANGELOG.md)** - Version history and changes
-
-## Project Structure
 
 ## Project Structure
 
@@ -55,7 +57,6 @@ tests/
 └── Unit/UserServiceTest.php
 ```
 
-## Quick Setup
 
 ## Quick Setup
 
@@ -75,7 +76,6 @@ php artisan queue:work  # separate terminal
 
 API available at: `http://localhost:8000/api`
 
-## Docker Setup (alternative)
 
 ## Docker Setup (alternative)
 
@@ -108,25 +108,62 @@ The Swagger UI provides:
 
 ## API Endpoints
 
-## API Endpoints
 
+**Public endpoints:**
 ```
 GET    /api/health                 - health check
+POST   /api/register               - register new user
+POST   /api/login                  - login user
+```
+
+**Protected endpoints (require Bearer token):**
+```
+GET    /api/me                     - get authenticated user
+POST   /api/logout                 - logout user
 GET    /api/users                  - list users (pagination, search)
 POST   /api/users                  - create user with emails
 GET    /api/users/{id}             - get user details
 PUT    /api/users/{id}             - update user/emails
 DELETE /api/users/{id}             - soft delete user
 POST   /api/users/{id}/welcome     - send welcome email (queued)
+GET    /api/users/{id}/emails      - list user emails
+POST   /api/users/{id}/emails      - add email to user
+GET    /api/users/{id}/emails/{emailId}  - get email details
+PUT    /api/users/{id}/emails/{emailId}  - update email
+DELETE /api/users/{id}/emails/{emailId}  - delete email
 ```
 
 ## Example Requests
-## Example Requests
+
+### Authentication
+
+```bash
+# Register
+curl -X POST http://localhost:8000/api/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "first_name": "Jan",
+    "last_name": "Kowalski",
+    "phone_number": "+48123456789",
+    "email": "jan@example.com",
+    "password": "password123",
+    "password_confirmation": "password123"
+  }'
+
+# Login
+curl -X POST http://localhost:8000/api/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "jan@example.com",
+    "password": "password123"
+  }'
+```
 
 ### Create user
 ```bash
 curl -X POST http://localhost:8000/api/users \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer {your_token}" \
   -d '{
     "first_name": "Jan",
     "last_name": "Kowalski",
@@ -141,17 +178,18 @@ curl -X POST http://localhost:8000/api/users \
 ```bash
 curl -X PUT http://localhost:8000/api/users/1 \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer {your_token}" \
   -d '{"first_name": "Jan", "last_name": "Nowak"}'
 ```
 
 ### Send welcome email
 ```bash
-curl -X POST http://localhost:8000/api/users/1/welcome
+curl -X POST http://localhost:8000/api/users/1/welcome \
+  -H "Authorization: Bearer {your_token}"
 ```
 
 See [API Documentation](docs/API.md) for complete reference.
 
-## Testing
 ## Testing
 
 ```bash
@@ -167,7 +205,6 @@ Tests:
 
 ## Database Schema
 
-## Database Schema
 
 ```sql
 users:

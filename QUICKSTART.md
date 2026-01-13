@@ -1,102 +1,102 @@
-# 🚀 Quick Start - Deployment nextstep.chat
+# 🚀 Quick Start - Production Deployment
 
-Szybki przewodnik wdrożenia aplikacji na serwerze Ubuntu z Docker.
-
----
-
-## Wymagania
-- ✅ Serwer Ubuntu 20.04+
-- ✅ Dostęp SSH
-- ✅ Domena **nextstep.chat** wskazująca na IP serwera
+Fast deployment guide for Ubuntu server with Docker.
 
 ---
 
-## Krok 1: Instalacja podstawowych narzędzi (5 min)
+## Requirements
+- ✅ Ubuntu 20.04+ server
+- ✅ SSH access
+- ✅ Domain pointing to server IP
+
+---
+
+## Step 1: Install basic tools (5 min)
 
 ```bash
-# Połącz się z serwerem
-ssh user@SERVER_IP
+# Connect to server
+ssh user@YOUR_SERVER_IP
 
-# Zaktualizuj system
+# Update system
 sudo apt update && sudo apt upgrade -y
 
-# Zainstaluj Docker
+# Install Docker
 curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 
-# Zainstaluj Docker Compose
+# Install Docker Compose
 sudo apt-get install docker-compose-plugin
 
-# Dodaj użytkownika do grupy docker
+# Add user to docker group
 sudo usermod -aG docker $USER
 newgrp docker
 
-# Zainstaluj Nginx (reverse proxy)
+# Install Nginx (reverse proxy)
 sudo apt install -y nginx certbot python3-certbot-nginx
 
-# Sprawdź instalację
+# Verify installation
 docker --version
 docker compose version
 ```
 
 ---
 
-## Krok 2: Sklonuj i skonfiguruj projekt (5 min)
+## Step 2: Clone and configure project (5 min)
 
 ```bash
-# Utwórz katalog
+# Create directory
 sudo mkdir -p /var/www
 cd /var/www
 
-# Sklonuj repozytorium
-sudo git clone https://github.com/tomaszzygadlo/user-management-api.git
+# Clone repository
+sudo git clone YOUR_REPOSITORY_URL user-management-api
 sudo chown -R $USER:$USER user-management-api
 cd user-management-api
 
-# Skopiuj i edytuj .env
+# Copy and edit .env
 cp .env.example .env
 nano .env
 ```
 
-### Najważniejsze zmienne w `.env`:
+### Important variables in `.env`:
 ```bash
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=https://nextstep.chat
+APP_URL=https://yourdomain.com
 
-# Ustaw SILNE hasła!
+# Set STRONG passwords!
 DB_PASSWORD=your_secure_mysql_password_here
 REDIS_PASSWORD=your_secure_redis_password_here
 
-# Email (opcjonalne, dla powiadomień)
+# Email (optional, for notifications)
 MAIL_MAILER=smtp
 MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
 MAIL_USERNAME=your_email@gmail.com
 MAIL_PASSWORD=your_app_password
-MAIL_FROM_ADDRESS=noreply@nextstep.chat
+MAIL_FROM_ADDRESS=noreply@yourdomain.com
 
 QUEUE_CONNECTION=redis
 ```
 
 ---
 
-## Krok 3: Uruchom aplikację (3 min)
+## Step 3: Start application (3 min)
 
 ```bash
-# Uruchom kontenery
+# Start containers
 docker compose -f docker-compose-prod.yml up -d
 
-# Zainstaluj zależności
+# Install dependencies
 docker compose -f docker-compose-prod.yml exec app composer install --no-dev --optimize-autoloader
 
-# Wygeneruj klucz aplikacji
+# Generate application key
 docker compose -f docker-compose-prod.yml exec app php artisan key:generate
 
-# Uruchom migracje bazy danych
+# Run database migrations
 docker compose -f docker-compose-prod.yml exec app php artisan migrate --force
 
-# Cache konfiguracji (ważne dla produkcji!)
+# Cache configuration (important for production!)
 docker compose -f docker-compose-prod.yml exec app php artisan config:cache
 docker compose -f docker-compose-prod.yml exec app php artisan route:cache
 docker compose -f docker-compose-prod.yml exec app php artisan view:cache
@@ -113,18 +113,18 @@ docker compose -f docker-compose-prod.yml ps
 
 ---
 
-## Krok 4: Skonfiguruj Nginx (2 min)
+## Step 4: Configure Nginx (2 min)
 
 ```bash
-# Utwórz konfigurację Nginx
-sudo nano /etc/nginx/sites-available/nextstep.chat
+# Create Nginx configuration
+sudo nano /etc/nginx/sites-available/yourdomain.com
 ```
 
-Wklej:
+Paste:
 ```nginx
 server {
     listen 80;
-    server_name nextstep.chat www.nextstep.chat;
+    server_name yourdomain.com www.yourdomain.com;
 
     location / {
         proxy_pass http://127.0.0.1:8000;
@@ -140,42 +140,42 @@ server {
 }
 ```
 
-Aktywuj:
+Activate:
 ```bash
-sudo ln -s /etc/nginx/sites-available/nextstep.chat /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/yourdomain.com /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 ```
 
 ---
 
-## Krok 5: Ustaw DNS (5-30 min propagacji)
+## Step 5: Set up DNS (5-30 min propagation)
 
-W panelu domeny **nextstep.chat** ustaw:
-- **Typ A**: `@` → IP twojego serwera
-- **Typ A**: `www` → IP twojego serwera
+In your domain panel set:
+- **Type A**: `@` → Your server IP
+- **Type A**: `www` → Your server IP
 
-Poczekaj na propagację DNS (sprawdź: `nslookup nextstep.chat`)
+Wait for DNS propagation (check: `nslookup yourdomain.com`)
 
 ---
 
-## Krok 6: Zainstaluj SSL (2 min)
+## Step 6: Install SSL (2 min)
 
 ```bash
-# Automatyczna konfiguracja SSL
-sudo certbot --nginx -d nextstep.chat -d www.nextstep.chat
+# Automatic SSL configuration
+sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
 
-# Certbot automatycznie:
-# - Pobierze certyfikat
-# - Skonfiguruje Nginx
-# - Ustawi auto-renewal
+# Certbot will automatically:
+# - Get certificate
+# - Configure Nginx
+# - Set up auto-renewal
 ```
 
-**✅ Aplikacja działa na https://nextstep.chat**
+**✅ Application running at https://yourdomain.com**
 
 ---
 
-## Krok 7: Firewall (1 min)
+## Step 7: Firewall (1 min)
 
 ```bash
 sudo ufw allow 'Nginx Full'
@@ -185,21 +185,21 @@ sudo ufw enable
 
 ---
 
-## Krok 8: Queue Worker - Opcjonalny (2 min)
+## Step 8: Queue Worker - Optional (2 min)
 
-Jeśli używasz wysyłania emaili:
+If you're using email sending:
 
 ```bash
-# Skopiuj service file
-sudo cp scripts/nextstep-worker.service /etc/systemd/system/
+# Copy service file (adjust paths in the file first)
+sudo cp scripts/queue-worker.service /etc/systemd/system/
 
-# Uruchom
+# Start
 sudo systemctl daemon-reload
-sudo systemctl enable nextstep-worker
-sudo systemctl start nextstep-worker
+sudo systemctl enable queue-worker
+sudo systemctl start queue-worker
 
-# Sprawdź status
-sudo systemctl status nextstep-worker
+# Check status
+sudo systemctl status queue-worker
 ```
 
 ---
@@ -208,10 +208,10 @@ sudo systemctl status nextstep-worker
 
 ```bash
 # Test API
-curl https://nextstep.chat/api/health
+curl https://yourdomain.com/api/health
 
 # Sprawdź Swagger UI w przeglądarce
-# https://nextstep.chat/api/documentation
+# https://yourdomain.com/api/documentation
 
 # Sprawdź logi
 docker compose -f docker-compose-prod.yml logs -f app
@@ -276,14 +276,14 @@ newgrp docker
 ### SSL nie działa
 ```bash
 # Sprawdź DNS
-nslookup nextstep.chat
+nslookup yourdomain.com
 
 # Sprawdź Nginx
 sudo nginx -t
 sudo systemctl status nginx
 
 # Spróbuj ponownie
-sudo certbot --nginx -d nextstep.chat -d www.nextstep.chat
+sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
 ```
 
 ### Brak uprawnień do storage/
@@ -296,5 +296,5 @@ docker compose -f docker-compose-prod.yml exec app chmod -R 775 /var/www/storage
 
 ## ✨ Gotowe!
 
-Twoja aplikacja działa na **https://nextstep.chat** 🎉
+Twoja aplikacja działa na **https://yourdomain.com** 🎉
 

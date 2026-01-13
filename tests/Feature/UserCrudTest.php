@@ -23,7 +23,7 @@ class UserCrudTest extends TestCase
             ->create();
 
         // Act
-        $response = $this->getJson('/api/users');
+        $response = $this->actingAsUser()->getJson('/api/users');
 
         // Assert
         $response->assertStatus(200)
@@ -47,7 +47,8 @@ class UserCrudTest extends TestCase
                 ],
             ]);
 
-        $this->assertCount(5, $response->json('data'));
+        // 5 created users + 1 authenticated user = 6 total
+        $this->assertCount(6, $response->json('data'));
     }
 
     /**
@@ -67,7 +68,7 @@ class UserCrudTest extends TestCase
         ]);
 
         // Act
-        $response = $this->getJson('/api/users?search=John');
+        $response = $this->actingAsUser()->getJson('/api/users?search=John');
 
         // Assert
         $response->assertStatus(200);
@@ -92,7 +93,7 @@ class UserCrudTest extends TestCase
         ];
 
         // Act
-        $response = $this->postJson('/api/users', $userData);
+        $response = $this->actingAsUser()->postJson('/api/users', $userData);
 
         // Assert
         $response->assertStatus(201)
@@ -126,7 +127,7 @@ class UserCrudTest extends TestCase
     public function test_cannot_create_user_without_required_fields(): void
     {
         // Act
-        $response = $this->postJson('/api/users', []);
+        $response = $this->actingAsUser()->postJson('/api/users', []);
 
         // Assert
         $response->assertStatus(422)
@@ -149,7 +150,7 @@ class UserCrudTest extends TestCase
         ];
 
         // Act
-        $response = $this->postJson('/api/users', $userData);
+        $response = $this->actingAsUser()->postJson('/api/users', $userData);
 
         // Assert
         $response->assertStatus(422)
@@ -167,7 +168,7 @@ class UserCrudTest extends TestCase
             ->create();
 
         // Act
-        $response = $this->getJson("/api/users/{$user->id}");
+        $response = $this->actingAsUser()->getJson("/api/users/{$user->id}");
 
         // Assert
         $response->assertStatus(200)
@@ -188,7 +189,7 @@ class UserCrudTest extends TestCase
     public function test_showing_non_existent_user_returns_404(): void
     {
         // Act
-        $response = $this->getJson('/api/users/99999');
+        $response = $this->actingAsUser()->getJson('/api/users/99999');
 
         // Assert
         $response->assertStatus(404);
@@ -210,7 +211,7 @@ class UserCrudTest extends TestCase
         ];
 
         // Act
-        $response = $this->putJson("/api/users/{$user->id}", $updateData);
+        $response = $this->actingAsUser()->putJson("/api/users/{$user->id}", $updateData);
 
         // Assert
         $response->assertStatus(200)
@@ -256,7 +257,7 @@ class UserCrudTest extends TestCase
         ];
 
         // Act
-        $response = $this->putJson("/api/users/{$user->id}", $updateData);
+        $response = $this->actingAsUser()->putJson("/api/users/{$user->id}", $updateData);
 
         // Assert
         $response->assertStatus(200);
@@ -283,7 +284,7 @@ class UserCrudTest extends TestCase
             ->create();
 
         // Act
-        $response = $this->deleteJson("/api/users/{$user->id}");
+        $response = $this->actingAsUser()->deleteJson("/api/users/{$user->id}");
 
         // Assert
         $response->assertStatus(204);
@@ -304,7 +305,7 @@ class UserCrudTest extends TestCase
         $email2 = Email::factory()->create(['user_id' => $user->id]);
 
         // Act
-        $this->deleteJson("/api/users/{$user->id}");
+        $this->actingAsUser()->deleteJson("/api/users/{$user->id}");
 
         // Assert
         $this->assertDatabaseMissing('emails', ['id' => $email1->id]);
