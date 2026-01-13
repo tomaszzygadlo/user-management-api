@@ -30,6 +30,9 @@ Simple REST API for managing users with multiple emails. Built with Laravel 12.
 - **[API Documentation](docs/API.md)** - Complete API endpoints reference
 - **[Manual Testing Guide](docs/MANUAL_TESTING.md)** - Manual testing with Postman, cURL, and alternatives
 - **[Authentication Guide](docs/AUTHENTICATION.md)** - Laravel Sanctum authentication
+- **[Mail Configuration](docs/MAIL_CONFIGURATION.md)** - SMTP and queue setup
+- **[Email Troubleshooting](docs/EMAIL_TROUBLESHOOTING.md)** - Quick guide to fix email issues
+- **[Production Environment](docs/ENV_PROD.md)** - Production deployment configuration
 - **[Architecture](docs/ARCHITECTURE.md)** - Project structure and design decisions
 - **[Project Structure](docs/PROJECT_STRUCTURE.md)** - Directory organization and navigation
 - **[Deployment Guide](docs/DEPLOYMENT.md)** - How to deploy to production

@@ -85,11 +85,27 @@ $COMPOSER_CMD install --no-interaction --no-dev --prefer-dist --optimize-autoloa
 if [ -f "package.json" ]; then
     echo -e "${YELLOW}[4/8] Installing NPM dependencies...${NC}"
     if [ "$USING_DOCKER" = true ]; then
-        docker compose -f $COMPOSE_FILE exec app npm install --production
-        docker compose -f $COMPOSE_FILE exec app npm run build || true
+        # Check if npm is available in the container
+        if docker compose -f $COMPOSE_FILE exec app which npm &> /dev/null; then
+            docker compose -f $COMPOSE_FILE exec app npm install --production
+            docker compose -f $COMPOSE_FILE exec app npm run build || true
+        else
+            echo -e "${YELLOW}⚠ npm not found in Docker container, trying host npm...${NC}"
+            if command -v npm &> /dev/null; then
+                npm install --production
+                npm run build || true
+            else
+                echo -e "${YELLOW}⚠ npm not found on host either, skipping NPM tasks${NC}"
+                echo -e "${YELLOW}  If you need frontend assets, build them manually or use a node container${NC}"
+            fi
+        fi
     else
-        npm install --production
-        npm run build || true
+        if command -v npm &> /dev/null; then
+            npm install --production
+            npm run build || true
+        else
+            echo -e "${YELLOW}⚠ npm not found, skipping NPM tasks${NC}"
+        fi
     fi
 else
     echo -e "${YELLOW}[4/8] Skipping NPM (no package.json found)${NC}"
